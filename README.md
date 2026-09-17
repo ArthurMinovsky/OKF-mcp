@@ -1,6 +1,6 @@
-# KM Proposal Demo — ACP + MCP + Obsidian + File Ingestion
+# OKF MCP Demo — ACP + MCP + Obsidian + File Ingestion
 
-Disposable proof-of-concept for the KM proposal.
+Disposable proof-of-concept for the OKF MCP.
 
 The demo has two persistent Docker services and one disposable tool container:
 
@@ -8,7 +8,7 @@ The demo has two persistent Docker services and one disposable tool container:
 - **`obsidian-server`** — optional headless Obsidian Sync transport.
 - **`ingest`** — one-shot AnyDoc-based file converter. It runs only when `./scripts/ingest.sh` is called.
 
-The **ACP / Agent CLI is the reasoning layer**. The KM Docker stack does not need an LLM provider, model API key, embedding API, or GraphRAG service.
+The **ACP / Agent CLI is the reasoning layer**. The OKF Docker stack does not need an LLM provider, model API key, embedding API, or GraphRAG service.
 
 ## Demo flow
 
@@ -25,7 +25,7 @@ lightweight heading-tree INDEX.md
   ↓
 Vault Cortex indexes Markdown
   ↓
-ACP Agent CLI + KM skill → MCP search/read
+ACP Agent CLI + OKF skill → MCP search/read
 ```
 
 There is **no review or approval gate in this PoC**. Imported knowledge becomes searchable immediately.
@@ -44,7 +44,7 @@ The implementation deliberately borrows only the smallest useful ideas:
 ## Layout
 
 ```text
-km-proposal-demo/
+OKF-MCP-demo/
 ├── docker-compose.yml
 ├── Dockerfile.ingest
 ├── .env.example
@@ -57,7 +57,7 @@ km-proposal-demo/
 │   ├── PROGRESS.md
 │   ├── source/imported/
 │   ├── knowledge/imported/
-│   └── .km/ingest/
+│   └── .OKF/ingest/
 ├── tools/
 │   └── ingest.mjs
 ├── scripts/
@@ -66,8 +66,8 @@ km-proposal-demo/
 │   ├── status.sh
 │   ├── uninstall.sh
 │   └── verify.sh
-├── skill/km-management/SKILL.md
-└── docs/reference/KM-management.md
+├── skill/OKF-management/SKILL.md
+└── docs/reference/OKF-management.md
 ```
 
 # Installation
@@ -77,7 +77,7 @@ km-proposal-demo/
 If you are using an AI coding agent (Claude Code, OpenCode, Codex, Gemini CLI, Cursor, etc.), paste this prompt into your CLI to have the agent set up the environment automatically:
 
 ```text
-From https://github.com/ArthurMinovsky/km-proposal-demo.git, read the README.md to install and start the Docker containers, configure the Vault Cortex MCP server in this CLI, and load the km-management skill.
+From https://github.com/ArthurMinovsky/OKF-MCP-demo.git, read the README.md to install and start the Docker containers, configure the Vault Cortex MCP server in this CLI, and load the OKF-management skill.
 ```
 
 ## Prerequisites
@@ -111,13 +111,13 @@ The installer stores a generated bearer token in `.env`; use it in your Agent CL
 
 ## 2. Configure MCP in your Agent CLI
 
-Add the `km-vault` MCP server to your agent CLI configuration:
+Add the `OKF-vault` MCP server to your agent CLI configuration:
 
 ### OpenCode (`~/.config/opencode/opencode.json`)
 ```json
 {
   "mcp": {
-    "km-vault": {
+    "OKF-vault": {
       "type": "remote",
       "url": "http://localhost:9705/mcp",
       "headers": {
@@ -133,7 +133,7 @@ Add the `km-vault` MCP server to your agent CLI configuration:
 ```json
 {
   "mcpServers": {
-    "km-vault": {
+    "OKF-vault": {
       "url": "http://localhost:9705/mcp",
       "headers": {
         "Authorization": "Bearer <YOUR_MCP_AUTH_TOKEN>"
@@ -145,19 +145,19 @@ Add the `km-vault` MCP server to your agent CLI configuration:
 
 ### Codex (`~/.codex/config.toml`)
 ```toml
-[mcp_servers.km_vault]
+[mcp_servers.OKF_vault]
 url = "http://localhost:9705/mcp"
 headers = { "Authorization" = "Bearer <YOUR_MCP_AUTH_TOKEN>" }
 ```
 
 Use the generated `MCP_AUTH_TOKEN` from `.env` in each template.
 
-## 3. Load the KM skill into the ACP agent
+## 3. Load the OKF skill into the ACP agent
 
 Copy:
 
 ```text
-skill/km-management/
+skill/OKF-management/
 ```
 
 into the skill location used by your ACP/Agent CLI (e.g. `~/.claude/skills/`, `~/.codex/skills/`, `~/.config/opencode/skills/`, or `~/.gemini/config/skills/`).
@@ -189,7 +189,7 @@ runtime/vault/
 ├── source/imported/DOC-.../<original file>
 ├── knowledge/imported/DOC-...-<name>.md
 ├── knowledge/imported/DOC-...-<name>.index.md
-└── .km/ingest/DOC-....json
+└── .OKF/ingest/DOC-....json
 ```
 
 The document ID is derived from the source SHA-256. Re-ingesting identical bytes produces the same ID.
@@ -205,7 +205,7 @@ The normalized Markdown frontmatter records:
 
 Vault Cortex then sees the new Markdown and makes it available to MCP search.
 
-## 5. Search and query KM knowledge
+## 5. Search and query OKF knowledge
 
 You can search and retrieve ingested knowledge through two complementary interfaces:
 
@@ -234,7 +234,7 @@ The ingestion container handles:
 
 **Demo limitation:** scanned/image-only PDFs require OCR and are not handled by local AnyDoc.
 
-# Proposal-session demo
+# MCP-session demo
 
 A short demo is enough:
 
@@ -245,8 +245,8 @@ A short demo is enough:
 
 Then in the ACP agent:
 
-1. load the KM skill;
-2. ask: `Search KM for "Retrieval order".`
+1. load the OKF skill;
+2. ask: `Search OKF for "Retrieval order".`
 3. ask: `Where did that knowledge come from?`
 4. ask: `What is the agent interface in the imported document?`
 
@@ -263,30 +263,30 @@ unstructured/office file
 
 # Demo Test Cases: Cross-Session Knowledge Retrieval
 
-These test cases demonstrate bidirectional knowledge transformation (**Codebase $\leftrightarrow$ KM $\leftrightarrow$ Document/PoC**) and verify that ingested knowledge persists across completely independent chat sessions.
+These test cases demonstrate bidirectional knowledge transformation (**Codebase $\leftrightarrow$ OKF $\leftrightarrow$ Document/PoC**) and verify that ingested knowledge persists across completely independent chat sessions.
 
-## 1. Codebase → KM → Report
+## 1. Codebase → OKF → Report
 
 **Step 1 (Session 1):** Paste this prompt into your agent CLI:
 ```text
-Please use github.com/sindhu-ss/cognito for convert codebase to KM.
+Please use github.com/sindhu-ss/cognito for convert codebase to OKF.
 ```
 
 **Step 2 (Session 2):** Kill the conversation or start a new chat, then paste this prompt:
 ```text
-From KM MCP, generate cognito document.pdf
+From OKF MCP, generate cognito document.pdf
 ```
 
-## 2. Report / Paper → KM → Codebase
+## 2. Report / Paper → OKF → Codebase
 
 **Step 1 (Session 1):** Paste this prompt into your agent CLI:
 ```text
-Please use https://arxiv.org/pdf/2608.25923 paper to KM.
+Please use https://arxiv.org/pdf/2608.25923 paper to OKF.
 ```
 
 **Step 2 (Session 2):** Kill the conversation or start a new chat, then paste this prompt:
 ```text
-From KM MCP, generate paper explained.html
+From OKF MCP, generate paper explained.html
 ```
 
 # Optional Obsidian server
@@ -325,7 +325,7 @@ Uninstall is intentionally a first-class part of this PoC.
 To have your AI coding agent clean up the demo, stop containers, and remove local configurations, paste this prompt:
 
 ```text
-Uninstall the KM proposal demo from https://github.com/ArthurMinovsky/km-proposal-demo.git. Run ./scripts/uninstall.sh --restore-all to stop and remove all demo Docker containers, clean up the local runtime vault, and remove the km-vault MCP configuration and km-management skill from this CLI.
+Uninstall the OKF MCP demo from https://github.com/ArthurMinovsky/OKF-MCP-demo.git. Run ./scripts/uninstall.sh --restore-all to stop and remove all demo Docker containers, clean up the local runtime vault, and remove the OKF-vault MCP configuration and OKF-management skill from this CLI.
 ```
 
 ## Safe stop — keep demo data
@@ -345,7 +345,7 @@ Removes the demo containers/network but retains the project-local vault and inde
 The local vault is deleted **only if**:
 
 ```text
-runtime/vault/.km-demo-owned
+runtime/vault/.OKF-demo-owned
 ```
 
 exists. The installer creates that sentinel only for the disposable vault it owns.
@@ -377,7 +377,7 @@ Then delete the extracted source folder if desired:
 
 ```bash
 cd ..
-rm -rf km-proposal-demo
+rm -rf OKF-MCP-demo
 ```
 
 ## What this demo never installs on the host
@@ -401,7 +401,7 @@ The default `VAULT_HOST_PATH=./runtime/vault` is fully disposable.
 
 If you manually change `VAULT_HOST_PATH` to an existing vault, imported files become real user data in that vault and the uninstall script intentionally does **not** delete the external vault.
 
-For a proposal demo, keep the default local vault.
+For a MCP demo, keep the default local vault.
 
 If you enable Obsidian Sync, use a disposable remote demo vault. Local uninstall cannot reverse remote sync history.
 
